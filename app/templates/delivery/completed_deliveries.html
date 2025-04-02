@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Deliveries</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Copy the entire style section from the provided orders.html */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0">
+                    <i class="fas fa-check-circle me-2"></i> Completed Deliveries
+                </h3>
+                <p class="mb-0 mt-2 text-white-50">
+                    View your history of successfully completed deliveries
+                </p>
+            </div>
+            <a href="{{ url_for('delivery.delivery_agent_dashboard') }}" class="back-btn">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+            </a>
+        </div>
+
+        {% if completed_deliveries|length > 0 %}
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Delivery Date</th>
+                                <th>Items</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order_id, order in completed_deliveries.items() %}
+                            <tr>
+                                <td><span class="order-id">{{ order_id }}</span></td>
+                                <td>
+                                    <div class="customer-info">
+                                        <i class="fas fa-user-circle"></i>
+                                        {{ order.customer_id }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-calendar-check me-1"></i>
+                                        {{ order.delivery_date }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% for store_id, items in order.items_by_store.items() %}
+                                        <div class="store-item">
+                                            <div class="store-name">
+                                                <i class="fas fa-store me-1"></i> {{ stores[store_id].name }}
+                                            </div>
+                                            <div>
+                                                {% for item, qty in items.items() %}
+                                                    <span class="item-badge">
+                                                        {{ item }} <span class="item-quantity">({{ qty }})</span>
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-alert mt-4">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <h5 class="mb-1">No completed deliveries found</h5>
+                <p class="mb-0 text-muted">
+                    You haven't completed any deliveries yet. Check your active orders to start delivering.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Agent Details - FastX</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        .agent-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .agent-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 30px;
+        }
+        .agent-body {
+            padding: 30px;
+        }
+        .agent-info {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .rating {
+            font-size: 2rem;
+            color: #ffc107;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border: none;
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="agent-card">
+            <div class="agent-header">
+                <h1><i class="fas fa-user-astronaut me-3"></i>Delivery Agent Details</h1>
+            </div>
+            <div class="agent-body">
+                <div class="agent-info">
+                    <p><strong><i class="fas fa-user me-2"></i>Username:</strong> {{ agent.username }}</p>
+                    <p><strong><i class="fas fa-star me-2"></i>Rating:</strong> 
+                        <span class="rating">
+                            {% for i in range(5) %}
+                                {% if i < agent.rating|int %}
+                                    <i class="fas fa-star"></i>
+                                {% elif (agent.rating - i)|round(1) >= 0.5 %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="ms-2">{{ agent.rating }}/5</span>
+                    </p>
+                </div>
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

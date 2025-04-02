@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .store-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #0d6efd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .store-card:hover {
+            transform: translateY(-3px);
+        }
+        .progress {
+            height: 20px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+        .progress-bar {
+            background-color: #198754;
+            transition: width 0.6s ease;
+        }
+        .card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 12px;
+        }
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        .order-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0;
+        }
+        .list-group-item {
+            border: none;
+            padding: 12px 15px;
+        }
+        .progress-labels {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .back-btn {
+            transition: all 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .delivery-agent-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .timestamp {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary">
+                <i class="fas fa-truck me-2"></i>Order Tracking
+            </h2>
+            <a href="{{ url_for('customer.customer_orders') }}" class="btn btn-outline-primary back-btn">
+                <i class="fas fa-arrow-left me-2"></i>Back to My Orders
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="order-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="m-0">Order #{{ order.order_id }}</h4>
+                    <span class="badge 
+                        {% if order.status == 'processing' %}bg-secondary
+                        {% elif order.status == 'collected' %}bg-warning
+                        {% else %}bg-success{% endif %}">
+                        {{ order.status|upper }}
+                    </span>
+                </div>
+                <div class="timestamp">
+                    <i class="far fa-calendar-alt me-2"></i>Ordered on: {{ order.timestamp.split('T')[0] }}
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="delivery-agent-info">
+                    <h5><i class="fas fa-user-astronaut me-2"></i>Delivery Agent</h5>
+                    {% if delivery_agent %}
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="bg-primary text-white rounded-circle p-3 me-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ delivery_agent.username }}</h6>
+                                <div>
+                                    <span class="text-warning">
+                                        {% for i in range(5) %}
+                                            {% if i < delivery_agent.rating|int %}
+                                                <i class="fas fa-star"></i>
+                                            {% elif (delivery_agent.rating - i) >= 0.5 %}
+                                                <i class="fas fa-star-half-alt"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    <span class="ms-2">{{ delivery_agent.rating }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mt-2">
+                            <i class="fas fa-hourglass-half me-2"></i>Not assigned yet
+                        </p>
+                    {% endif %}
+                </div>
+
+                <h5 class="mt-4 mb-3"><i class="fas fa-clipboard-list me-2"></i>Order Details</h5>
+                {% for store_id, items in order.items_by_store.items() %}
+                    <div class="store-card mb-3">
+                        <h6><i class="fas fa-store me-2"></i>{{ stores[store_id].name }}</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for item_name, quantity in items.items() %}
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-shopping-basket text-primary me-2"></i>
+                                    {{ item_name }} 
+                                    <span class="badge bg-light text-dark">Qty: {{ quantity }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+
+                <h5 class="mt-4 mb-3"><i class="fas fa-shipping-fast me-2"></i>Delivery Progress</h5>
+                <div class="progress">
+                    <div class="progress-bar 
+                        {% if order.status == 'processing' %}w-25
+                        {% elif order.status == 'collected' %}w-75
+                        {% else %}w-100{% endif %}" 
+                        role="progressbar">
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-3 progress-labels">
+                    <span>
+                        <i class="fas fa-check-circle 
+                            {% if order.status %}text-success{% else %}text-muted{% endif %}"></i>
+                        Order Placed
+                    </span>
+                    <span>
+                        <i class="fas fa-check-circle 
+                            {% if order.status == 'collected' or order.status == 'delivered' %}text-success{% else %}text-muted{% endif %}"></i>
+                        Items Collected
+                    </span>
+                    <span>
+                        <i class="fas fa-check-circle 
+                            {% if order.status == 'delivered' %}text-success{% else %}text-muted{% endif %}"></i>
+                        Delivered
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

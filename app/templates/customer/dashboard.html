@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - FastX</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #212529 0%, #343a40 100%);
+            color: white;
+            min-height: 100vh;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            padding-top: 20px;
+        }
+        
+        .sidebar h4 {
+            color: white;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link i {
+            width: 25px;
+            text-align: center;
+            margin-right: 8px;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .search-container {
+            background-color: white;
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            border: none;
+            box-shadow: none;
+            padding-left: 20px;
+        }
+        
+        .search-input:focus {
+            box-shadow: none;
+        }
+        
+        .search-btn {
+            border-radius: 50px;
+            padding: 8px 20px;
+        }
+        
+        .item-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .card-subtitle {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0d6efd;
+            margin-bottom: 15px;
+        }
+        
+        .discount-badge {
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .stock-info {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.4);
+        }
+        
+        .quantity-display {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+            background-color: #0d6efd;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: #0d6efd;
+        }
+        
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .logout-btn:hover {
+            background-color: #bb2d3b;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Sidebar Navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky pt-3">
+                    <h4 class="text-center">Your Profile</h4>
+                    <ul class="nav flex-column mt-4">
+                        <li class="nav-item">
+                            <span class="nav-link">
+                                <i class="fas fa-user-circle"></i> {{ current_user.id }}
+                            </span>
+                        </li>
+                        <hr>
+                        <li class="nav-item">
+                            <a href="{{ url_for('customer.view_cart') }}" class="nav-link">
+                                <i class="fas fa-shopping-cart"></i> My Cart
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('customer.customer_orders') }}" class="nav-link">
+                                <i class="fas fa-box"></i> My Orders
+                            </a>
+                        </li>
+                        <hr>
+                        <!-- Logout Button -->
+                        <li class="nav-item">
+                            <a href="{{ url_for('main.logout') }}" class="logout-btn text-center">
+                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <!-- Welcome Banner -->
+                <div class="welcome-banner">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="mb-0">Welcome, {{ current_user.id }}</h1>
+                            <p class="mb-0 mt-2">What would you like to order today?</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('customer.customer_orders') }}" class="btn btn-light me-2">
+                                <i class="fas fa-list me-2"></i> My Orders
+                            </a>
+                            <a href="{{ url_for('customer.view_cart') }}" class="btn btn-success">
+                                <i class="fas fa-shopping-cart me-2"></i> View Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="search-container d-flex">
+                    <form class="d-flex flex-grow-1" role="search" method="GET" action="{{ url_for('customer.customer_dashboard') }}">
+                        <input class="form-control search-input flex-grow-1" type="search" placeholder="Search for items..." aria-label="Search" name="search" value="{{ search_term }}">
+                        <button class="btn btn-primary search-btn" type="submit">
+                            <i class="fas fa-search me-2"></i> Search
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Items Display -->
+                <h2 class="section-title">Available Items</h2>
+                {% if items %}
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for item in items %}
+                        <div class="col">
+                            <div class="item-card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ item.name }}</h5>
+                                    <h6 class="card-subtitle text-muted">{{ item.type }}</h6>
+                                    
+                                    <div class="price-tag">
+                                        ${{ item.final_price | round(2) }}
+                                        {% if item.discount > 0 %}
+                                            <span class="discount-badge">{{ item.discount }}% OFF</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="stock-info">
+                                        {% if item.stock > 10 %}
+                                            <span class="text-success"><i class="fas fa-check-circle me-1"></i> In Stock ({{ item.stock }})</span>
+                                        {% elif item.stock > 0 %}
+                                            <span class="text-warning"><i class="fas fa-exclamation-circle me-1"></i> Low Stock ({{ item.stock }})</span>
+                                        {% else %}
+                                            <span class="text-danger"><i class="fas fa-times-circle me-1"></i> Out of Stock</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center">
+                                        <a href="{{ url_for('customer.add_to_cart', item_name=item.name) }}" class="btn btn-primary">
+                                            <i class="fas fa-cart-plus me-2"></i> Add to Cart
+                                        </a>
+                                        {% if session['cart'] and item.name in session['cart'] %}
+                                            <span class="quantity-display">{{ session['cart'][item.name]['quantity'] }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i> No items available at the moment.
+                </div>
+                {% endif %}
+            </main>
+        </div> <!-- End of Row -->
+    </div> <!-- End of Container -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
