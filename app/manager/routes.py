@@ -5,7 +5,7 @@ from app.models.stores import stores, orders
 from app.forms import AddItemForm, UpdateItemForm
 
 @manager.route('/dashboard')
-@login_required
+@login_required 
 def manager_dashboard():
     # Check if user is a manager
     if current_user.user_type != "Manager":
@@ -56,7 +56,8 @@ def manager_orders():
         flash('No store associated with this manager', 'warning')
         return redirect(url_for('manager.manager_dashboard'))
     
-    store_orders = {order_id: order for order_id, order in orders.items() if store_id in order['items_by_store']}
+    store_orders = {order_id: order for order_id, order in orders.items() if 'items_by_store' in order and store_id in order['items_by_store']}
+
     return render_template('orders.html', title='Store Orders', orders=store_orders, stores=stores)
 
 @manager.route('/add_item', methods=['GET', 'POST'])

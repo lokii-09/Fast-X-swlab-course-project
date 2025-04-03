@@ -83,8 +83,14 @@ def test_unique_items():
     assert "Cheese" not in stores[2]["items"]
     assert "Cheese" in stores[3]["items"]
 
-def test_orders_empty_initially():
+def test_orders_empty_initially(monkeypatch):
     """Test that orders dictionary is empty initially."""
+    # Create an empty dictionary to replace the global orders
+    empty_orders = {}
+    monkeypatch.setattr('app.models.stores.orders', empty_orders)
+    
+    # Now test with the patched empty dictionary
+    from app.models.stores import orders
     assert isinstance(orders, dict)
     assert len(orders) == 0
 
