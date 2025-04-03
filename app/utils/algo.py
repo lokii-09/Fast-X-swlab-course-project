@@ -75,6 +75,13 @@ def assign_driver(order):
                     shortest_paths[source][target] = path_length
                 except nx.NetworkXNoPath:
                     shortest_paths[source][target] = float('inf')
+                except nx.NetworkXError:
+                    # Handle any other NetworkX-related errors
+                    shortest_paths[source][target] = float('inf')
+        
+        # Check if all paths from driver to stores are impossible
+        if all(shortest_paths[driver_node][store] == float('inf') for store in stores_to_visit):
+            continue  # Skip this driver if they can't reach any store
         
         # If there are only a few stores (≤ 4), we can try all permutations
         # Otherwise, use a nearest neighbor heuristic which is faster
@@ -86,49 +93,46 @@ def assign_driver(order):
             for perm in itertools.permutations(stores_to_visit):
                 current_distance = shortest_paths[driver_node][perm[0]]  # Distance from driver to first store
                 
+                if current_distance == float('inf'):
+                    continue  # Skip this permutation if the first leg is impossible
+                
                 # Add distances between consecutive stores
+                valid_route = True
                 for i in range(len(perm) - 1):
-                    current_distance += shortest_paths[perm[i]][perm[i+1]]
+                    leg_distance = shortest_paths[perm[i]][perm[i+1]]
+                    if leg_distance == float('inf'):
+                        valid_route = False
+                        break  # Skip this permutation if any leg is impossible
+                    current_distance += leg_distance
+                
+                if not valid_route:
+                    continue
                 
                 # Add distance from last store to customer
-                current_distance += shortest_paths[perm[-1]][customer_node]
+                final_leg = shortest_paths[perm[-1]][customer_node]
+                if final_leg == float('inf'):
+                    continue  # Skip if can't reach customer
+                
+                current_distance += final_leg
                 
                 if current_distance < best_distance:
                     best_distance = current_distance
                     best_route = perm
             
+            # If no valid route found for this driver
+            if best_route is None:
+                continue
+            
             # Convert store nodes back to store IDs
             optimized_store_order = [store_id_mapping[store] for store in best_route]
             total_distance = best_distance
             
-        else:
-            # For larger number of stores, use nearest neighbor heuristic (greedy approach)
-            current_node = driver_node
-            total_distance = 0
-            optimized_store_order = []
-            remaining_stores = stores_to_visit.copy()
+            # Store the optimized route for this driver
+            best_routes[driver['username']] = optimized_store_order
             
-            while remaining_stores:
-                # Find closest store from current position
-                closest_store = min(remaining_stores, 
-                                   key=lambda store: shortest_paths[current_node][store])
-                
-                total_distance += shortest_paths[current_node][closest_store]
-                current_node = closest_store
-                remaining_stores.remove(closest_store)
-                
-                # Add the store ID to the optimized order
-                optimized_store_order.append(store_id_mapping[closest_store])
-            
-            # Add distance from last store to customer
-            total_distance += shortest_paths[current_node][customer_node]
-        
-        # Store the optimized route for this driver
-        best_routes[driver['username']] = optimized_store_order
-        
-        # Push driver into priority queue: (priority, distance, driver_username)
-        # This ensures drivers with priority 1 (available) are considered first
-        heapq.heappush(driver_queue, (priority, total_distance, driver['username']))
+            # Push driver into priority queue: (priority, distance, driver_username)
+            # This ensures drivers with priority 1 (available) are considered first
+            heapq.heappush(driver_queue, (priority, total_distance, driver['username']))
     
     # Select the driver with highest priority (lowest number) and shortest distance
     if driver_queue:
@@ -193,14 +197,10 @@ Key Optimization Techniques
 Priority-Based Driver Selection: Favors available drivers over busy ones
 
 Adaptive Route Optimization:
-
-Exact solution (brute force) for small problems
-
-Heuristic approach (nearest neighbor) for larger problems
-
-Pre-computation of Shortest Paths: Uses Floyd-Warshall algorithm to calculate all pairwise shortest paths once
-
-Complete Route Consideration: Optimizes the entire route from driver → stores → customer
+    Exact solution (brute force) for small problems
+    Heuristic approach (nearest neighbor) for larger problems
+    Pre-computation of Shortest Paths: Uses Floyd-Warshall algorithm to calculate all pairwise shortest paths once
+    Complete Route Consideration: Optimizes the entire route from driver → stores → customer
 
 This hybrid approach balances computational efficiency with solution quality, making it suitable for real-time delivery route optimization.
 """

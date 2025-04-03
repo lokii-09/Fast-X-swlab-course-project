@@ -79,7 +79,8 @@ def completed_deliveries():
     
     completed_deliveries = {order_id: order for order_id, order in orders.items() 
                         if order.get('delivery_agent') == current_user.id 
-                        and order.get('status') == 'delivered'}
+                        and order.get('status') == 'delivered'
+                        and 'items_by_store' in order} 
     
     return render_template('delivery/completed_deliveries.html',
                            title='Completed Deliveries',

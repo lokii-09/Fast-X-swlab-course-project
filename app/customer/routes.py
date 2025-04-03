@@ -239,7 +239,7 @@ def process_purchase():
     
     if not payment_success:
         flash("Payment processing failed.", "danger")
-        return redirect(url_for("customer.view_cart"))
+        return redirect(url_for ("customer.view_cart"))
     
     # Create order structure
     order_id = generate_order_id()

@@ -58,7 +58,8 @@ def test_update_order_status_to_collected(client, delivery_agent):
             "id": test_order_id,
             "delivery_agent": "driver1",
             "status": "preparing",
-            "delivered": False
+            "delivered": False,
+            "items_by_store": {1: {"Apple": 2}}  # Add this line
         }
         response = client.post(
             url_for('delivery.update_order_status', order_id=test_order_id),
@@ -67,6 +68,7 @@ def test_update_order_status_to_collected(client, delivery_agent):
         )
         assert response.status_code == 200
         assert orders[test_order_id]['status'] == 'collected'
+
 
 def test_update_order_status_to_delivered(client, delivery_agent):
     with client.application.test_request_context():
@@ -87,13 +89,25 @@ def test_update_order_status_to_delivered(client, delivery_agent):
         assert response.status_code == 200
         assert orders[test_order_id]['status'] == 'delivered'
         assert orders[test_order_id]['delivered'] is True
-
 def test_completed_deliveries(client, delivery_agent):
     with client.application.test_request_context():
         login_user(delivery_agent)
+        # Add a completed delivery to test
+        test_order_id = "ORD-COMPLETED"
+        orders[test_order_id] = {
+            "id": test_order_id,
+            "delivery_agent": delivery_agent.id,  # Use the actual delivery agent's ID
+            "status": "delivered",
+            "delivered": True,
+            "items_by_store": {1: {"Apple": 2}},
+            "customer_location": (1, 0)
+        }
         response = client.get(url_for('delivery.completed_deliveries'))
         assert response.status_code == 200
         assert b'Completed Deliveries' in response.data
+        # Add more specific assertions to check if the order details are displayed correctly
+
+
 
 def test_non_delivery_agent_access(client, customer):
     with client.application.test_request_context():

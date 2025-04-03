@@ -113,7 +113,7 @@ def test_delivery_graph_structure():
     
     # Test number of nodes and edges
     assert len(delivery_graph.nodes) == 7
-    assert len(delivery_graph.edges) == 9
+    assert len(delivery_graph.edges) == 12
     
     # Test node names
     expected_nodes = ["Admin Office", "Store A", "Store B", "Store C", 
@@ -131,7 +131,10 @@ def test_delivery_graph_structure():
         ("Store B", "Customer 2"): 2,
         ("Store B", "Customer 3"): 5,
         ("Store C", "Customer 1"): 6,
-        ("Store C", "Customer 3"): 4
+        ("Store C", "Customer 3"): 4,
+        ("Store A", "Store B") : 3,
+        ("Store A", "Store C"): 4,
+        ("Store B", "Store C"): 2
     }
     
     for edge, weight in edge_weights.items():
