@@ -31,7 +31,7 @@ def runner(app):
     """A test CLI runner for the app."""
     return app.test_cli_runner()
 
-# Test data fixtures
+# Test data fixture
 @pytest.fixture
 def test_stores():
     """Return a copy of the stores data for testing."""
@@ -116,7 +116,7 @@ def delivery_client(client, app):
                            rating=4.5, location=(0, 0))
         login_user(delivery_user)
         
-    return client
+    return  client
 
 """
 This conftest.py file provides:
@@ -125,5 +125,5 @@ This conftest.py file provides:
     A runner fixture for testing CLI commands
     Data fixtures (test_stores and test_users) to provide test data
     An auth_client fixture with login/logout helpers
-    Role-specific client fixtures for admin, manager, customer, and delivery agent
+    Role-specific client fixtures for admin, manager, customer and delivery agent
 """
